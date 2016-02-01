@@ -80,6 +80,10 @@ namespace LBLSubAsync
             {
                 return (_remark);
             }
+            set
+            {   // 16.01.28 連続呼び出し時の状況設定追加
+                _remark = value;
+            }
         }
 
         #endregion
@@ -118,7 +122,23 @@ namespace LBLSubAsync
             {   // バッファーに実装有り
                 await SetWsuppAsync(_wbuf);     // 引用符間情報のクリア
 
-                await SetBufsupAsync(_wbuf);    // 構文評価を行う
+                await SetBufsupAsync(_wbuf, _remark);    // 構文評価を行う
+
+                if (_wbuf != null)
+                {   // 評価対象有り？
+                    await SetGetkenAsync(_wbuf);    // トークン抽出を行う 
+
+                    await SetRsvwrdAsync();     // 予約語確認を行う
+                }
+            }
+        }
+        public async Task ExecAsync(Boolean remflg)
+        {   // ラベル評価を行う
+            if (!_empty)
+            {   // バッファーに実装有り
+                await SetWsuppAsync(_wbuf);     // 引用符間情報のクリア
+
+                await SetBufsupAsync(_wbuf, remflg);    // 構文評価を行う
 
                 if (_wbuf != null)
                 {   // 評価対象有り？
@@ -149,9 +169,9 @@ namespace LBLSubAsync
             else
             {   // 整形処理を行う
                 // 不要情報削除
-                if (bufsup == null)
+                if (lrskip == null)
                 {   // 未定義？
-                    bufsup = new CS_BufsupAsync();
+                    lrskip = new CS_LRskipAsync();
                 }
                 await lrskip.ExecAsync(_wbuf);
                 _wbuf = lrskip.Wbuf;
@@ -185,7 +205,7 @@ namespace LBLSubAsync
                 _wbuf = wsupp.Wbuf;
             }
         }
-        private async Task SetBufsupAsync(String _strbuf)
+        private async Task SetBufsupAsync(String _strbuf, Boolean __remark)
         {   // 構文評価を行う
             if (bufsup == null)
             {   // 未定義？
@@ -195,6 +215,7 @@ namespace LBLSubAsync
             if (_strbuf != null)
             {   // 評価有り？
                 await bufsup.ClearAsync();
+                bufsup.Remark = __remark;
                 await bufsup.ExecAsync(_wbuf);
 
                 _wbuf = bufsup.Wbuf;
