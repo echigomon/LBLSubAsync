@@ -21,12 +21,12 @@ namespace LBLSubAsync
         CS_GetkenAsync getken;
         CS_RsvwrdAsync rsvwrd;
 
-        private String _wbuf;       // ソース情報
-        private Boolean _empty;     // ソース情報有無
-        private String _rem;        // 注釈情報
-        private Boolean _remark;    // 注釈管理情報
-        private String[] _array;    // トークン抽出情報
-        private int _wcnt;          // トークン要素数
+        private static String _wbuf;       // ソース情報
+        private static Boolean _empty;     // ソース情報有無
+        private static String _rem;        // 注釈情報
+        private static Boolean _remark;    // 注釈管理情報
+        private static String[] _array;    // トークン抽出情報
+        private static int _wcnt;          // トークン要素数
         public String Wbuf
         {
             get
